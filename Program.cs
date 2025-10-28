@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using DogSocietyApi.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +14,12 @@ var connectionString = builder.Configuration.GetConnectionString("localhost");
 builder.Services.AddDbContext<DogSocietyDbContext>(opt =>
     opt.UseNpgsql(connectionString));
 
-var app = builder.Build();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie();
 
-/*using var scope = app.Services.CreateScope();
-await using var dbContext = scope.ServiceProvider.GetRequiredService<DogSocietyDbContext>();
-await dbContext.Database.MigrateAsync();*/
+builder.Services.AddAuthorization();
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -27,6 +29,13 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+var cookiePolicyOptions = new CookiePolicyOptions
+{
+    MinimumSameSitePolicy = SameSiteMode.Strict,
+};
+app.UseCookiePolicy(cookiePolicyOptions);
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
