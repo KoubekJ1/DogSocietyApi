@@ -65,8 +65,8 @@ public class EventController : ControllerBase
         var @event = new Event
         {
             Name = formData.Name,
-            From = formData.From,
-            Until = formData.Until,
+            From = DateTime.SpecifyKind(formData.From, DateTimeKind.Utc),
+            Until = DateTime.SpecifyKind(formData.Until, DateTimeKind.Utc),
             AddressId = formData.AddressId,
             TypeId = formData.TypeId
         };
