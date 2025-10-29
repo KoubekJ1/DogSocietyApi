@@ -9,10 +9,25 @@ public class DogSocietyDbContext : DbContext
 	{
 	}
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-    }
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.Entity<UserType>().HasData(
+			[
+				new UserType { TypeId = 1, Name = "User" },
+			 	new UserType { TypeId = 2, Name = "Administrator" }
+			]
+		);
+
+		modelBuilder.Entity<EventType>().HasData(
+			[
+				new EventType { TypeId = 1, Name = "Showcase" },
+				new EventType { TypeId = 2, Name = "Race" },
+				new EventType { TypeId = 3, Name = "Seminar" }
+			]
+		);
+
+		base.OnModelCreating(modelBuilder);
+	}
 
 	public DbSet<Address> Addresses { get; set; }
 	public DbSet<Association> Associations { get; set; }

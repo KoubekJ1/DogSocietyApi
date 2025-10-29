@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace DogSocietyApi.Models;
 
-public class User : IdentityUser
+public class User
 {
+    [Key]
     public long UserId { get; set; }
 
     public string FullName { get; set; }

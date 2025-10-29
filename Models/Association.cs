@@ -8,7 +8,7 @@ public class Association
     public long AssociationId { get; set; }
     public string Name { get; set; }
     public DateOnly CreationDate { get; set; }
-    public string Notes { get; set; }
+    public string? Notes { get; set; }
 
     public long PresidentId { get; set; }
     public User President { get; set; }

@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using DogSocietyApi.DataTransferObjects;
 using DogSocietyApi.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -18,28 +19,40 @@ public class UserController : ControllerBase
         _context = context;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<User>> Register([FromBody] User user)
+    [HttpPost("register")]
+    public async Task<ActionResult<User>> Register([FromForm] RegisterDto registration)
     {
-        await _context.Users.AddAsync(user);
+        var userType = _context.UserTypes.First(x => x.Name == "User");
+        var user = new User
+        {
+            FullName = registration.FullName,
+            Email = registration.Email,
+            Password = registration.Password,
+            PhoneNumber = registration.PhoneNumber,
+            Type = userType,
+            TypeId = userType.TypeId
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
 
         return Ok(user);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<User>> Login(string email, string password)
+    [HttpPost("login")]
+    public async Task<ActionResult<User>> Login([FromForm] LoginDto login)
     {
         // Source: https://learn.microsoft.com/en-us/aspnet/core/security/authentication/cookie?view=aspnetcore-9.0
-        var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email && user.Password == password);
+        var user = await _context.Users.Include(x => x.Type).FirstOrDefaultAsync(user => user.Email == login.Email && user.Password == login.Password);
 
         if (user == null)
         {
-            return Forbid("Invalid credentials!");
+            return Unauthorized();
         }
 
         var claims = new List<Claim>
         {
-            new Claim("Id", user.Id),
+            new Claim("UserId", user.UserId.ToString()),
             new Claim(ClaimTypes.Name, user.Email),
             new Claim("FullName", user.FullName),
             new Claim(ClaimTypes.Role, user.Type.ToString())

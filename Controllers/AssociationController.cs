@@ -1,3 +1,4 @@
+using DogSocietyApi.DataTransferObjects;
 using DogSocietyApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,18 +36,34 @@ public class AssociationController : ControllerBase
         return Ok(association);
     }
 
-    [HttpGet("/mine")]
+    [HttpGet("mine")]
     public async Task<ActionResult<IEnumerable<Association>>> GetOwnedAssociations()
     {
-        long userId = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == "Id").Value);
+        long userId = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == "UserId").Value);
         var result = _context.Associations.Where(association => association.PresidentId == userId);
         return Ok(result);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Association>> CreateAssociation([FromBody] Association association)
+    [HttpPost("create")]
+    public async Task<ActionResult<Association>> CreateAssociation([FromForm] AssociationDto formData)
     {
-        await _context.Associations.AddAsync(association);
+        var association = new Association
+        {
+            Name = formData.Name,
+            CreationDate = DateOnly.FromDateTime(DateTime.Now),
+            Notes = formData.Notes,
+            PresidentId = formData.PresidentId != null ? (long)formData.PresidentId : -1,
+            AddressId = formData.AddressId,
+        };
+
+        if (association.PresidentId == -1)
+        {
+            long userId = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == "UserId").Value);
+            association.PresidentId = userId;
+            association.President = _context.Users.Find(userId);
+        }
+        
+        _context.Associations.Add(association);
         await _context.SaveChangesAsync();
 
         return Ok(association);
