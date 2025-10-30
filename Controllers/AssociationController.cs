@@ -69,15 +69,38 @@ public class AssociationController : ControllerBase
         return Ok(association);
     }
 
+    [HttpGet("statutes/{associationId}")]
+    public async Task<ActionResult<Statute>> GetStatutes(int associationId)
+    {
+        var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
+
+        var currentStatute = _context.Statutes.FirstOrDefault(
+            statute => statute.AssociationId == associationId
+            && statute.ValidFrom <= now
+            && (statute.ValidUntil == null || statute.ValidUntil >= now));
+
+        /*return Ok(new StatuteDto
+        {
+            AssociationId = associationId,
+            ValidFrom = currentStatute.ValidFrom,
+            ValidUntil = currentStatute.ValidUntil,
+            Text = currentStatute.Text
+        });*/
+
+        return Ok(currentStatute);
+    }
+
     [HttpPost("changestatute")]
     public async Task<ActionResult> ChangeStatute([FromForm] StatuteDto formData)
     {
-        var now = DateOnly.FromDateTime(DateTime.Now);
+        var now = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc);
 
-        var currentStatute = _context.Statutes.FirstOrDefault(statute => statute.ValidFrom <= now
+        var currentStatute = _context.Statutes.FirstOrDefault(
+            statute => statute.AssociationId == formData.AssociationId
+            && statute.ValidFrom <= now
             && (statute.ValidUntil == null || statute.ValidUntil >= now));
 
-        DateOnly validFrom;
+        DateTime validFrom;
         if (currentStatute == null)
         {
             validFrom = now;
@@ -91,7 +114,7 @@ public class AssociationController : ControllerBase
             }
             else
             {
-                validFrom = (DateOnly)currentStatute.ValidUntil;
+                validFrom = (DateTime)currentStatute.ValidUntil;
             }
         }
 
@@ -101,8 +124,9 @@ public class AssociationController : ControllerBase
 
         var newStatute = new Statute
         {
-            ValidFrom = (DateOnly)formData.ValidFrom,
-            ValidUntil = formData.ValidUntil,
+            AssociationId = formData.AssociationId,
+            ValidFrom = DateTime.SpecifyKind((DateTime)formData.ValidFrom, DateTimeKind.Utc),
+            ValidUntil = formData.ValidUntil != null ? DateTime.SpecifyKind((DateTime)formData.ValidUntil, DateTimeKind.Utc) : null,
             Text = formData.Text,
             AuthorId = userId
         };
@@ -115,7 +139,7 @@ public class AssociationController : ControllerBase
         {
             Entity = "Statute",
             RowId = newStatute.StatuteId,
-            Date = DateTime.Now,
+            Date = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
             Comment = formData.Comment,
             UserId = userId,
             TypeId = _context.LogTypes.FirstOrDefault(x => x.Name == "Statute").TypeId

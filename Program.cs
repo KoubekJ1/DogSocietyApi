@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using DogSocietyApi.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "DogSociety API",
+        Description = "An ASP.NET Core Web API for managing DogSociety",
+    });
+});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

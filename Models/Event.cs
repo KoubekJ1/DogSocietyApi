@@ -14,5 +14,5 @@ public class Event
     public EventType Type { get; set; }
     public long TypeId { get; set; }
 
-    public List<Association> Associations { get; set; }
+    public List<Association> Associations { get; set; } = new List<Association>();
 }

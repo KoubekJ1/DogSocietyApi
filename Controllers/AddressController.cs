@@ -21,19 +21,19 @@ public class AddressController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Association>>> GetAddresses()
+    public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
     {
-        return await _context.Associations.ToListAsync();
+        return await _context.Addresses.ToListAsync();
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Association>> GetAdress(long id)
+    public async Task<ActionResult<Address>> GetAdress(long id)
     {
-        var association = await _context.Associations.FindAsync(id);
+        var address = await _context.Addresses.FindAsync(id);
 
-        if (association == null) return NotFound();
+        if (address == null) return NotFound();
 
-        return Ok(association);
+        return Ok(address);
     }
 
     [HttpPost("create")]

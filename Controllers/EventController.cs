@@ -29,7 +29,7 @@ public class EventController : ControllerBase
     [HttpGet("upcoming")]
     public async Task<ActionResult<IEnumerable<Event>>> GetUpcomingEvents()
     {
-        return await _context.Events.Where(x => x.From > DateTime.Now).ToListAsync();
+        return await _context.Events.Where(x => x.From > DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc)).ToListAsync();
     }
 
     [HttpGet("{id}")]
@@ -60,15 +60,15 @@ public class EventController : ControllerBase
     }
 
     [HttpPost("joinevent")]
-    public async Task<ActionResult> JoinEvent(long eventId, long associationId)
+    public async Task<ActionResult> JoinEvent([FromForm] JoinEventDto formData)
     {
-        var @event = _context.Events.Find(eventId);
+        var @event = _context.Events.Include(x => x.Associations).FirstOrDefault(x => x.EventId == formData.eventId);
         if (@event == null)
         {
-            return NotFound($"Event {eventId} not found!");
+            return NotFound($"Event {formData.eventId} not found!");
         }
 
-        var association = _context.Associations.Find(associationId);
+        var association = _context.Associations.Find(formData.associationId);
         if (association == null)
         {
             return NotFound($"Association {association} not found!");
@@ -77,15 +77,20 @@ public class EventController : ControllerBase
         long userId = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == "UserId").Value);
         if (association.PresidentId != userId)
         {
-            return Forbid();
+            return Unauthorized();
+        }
+
+        if (@event.Associations.FirstOrDefault(x => x.AssociationId == formData.associationId) != null)
+        {
+            return Ok("Association already participating!");
         }
 
         var log = new AuditLog
         {
             Entity = "Participation",
-            RowId = associationId,
-            Date = DateTime.Now,
-            Comment = $"Association {association.Name}({associationId}) has signed up for event {@event.Name}({eventId})",
+            RowId = formData.associationId,
+            Date = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
+            Comment = $"Association {association.Name}({formData.associationId}) has signed up for event {@event.Name}({formData.eventId})",
             UserId = userId,
             TypeId = _context.LogTypes.FirstOrDefault(x => x.Name == "Participation").TypeId
         };
