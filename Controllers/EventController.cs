@@ -59,6 +59,43 @@ public class EventController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("joinevent")]
+    public async Task<ActionResult> JoinEvent(long eventId, long associationId)
+    {
+        var @event = _context.Events.Find(eventId);
+        if (@event == null)
+        {
+            return NotFound($"Event {eventId} not found!");
+        }
+
+        var association = _context.Associations.Find(associationId);
+        if (association == null)
+        {
+            return NotFound($"Association {association} not found!");
+        }
+
+        long userId = Convert.ToInt64(HttpContext.User.Claims.First(x => x.Type == "UserId").Value);
+        if (association.PresidentId != userId)
+        {
+            return Forbid();
+        }
+
+        var log = new AuditLog
+        {
+            Entity = "Participation",
+            RowId = associationId,
+            Date = DateTime.Now,
+            Comment = $"Association {association.Name}({associationId}) has signed up for event {@event.Name}({eventId})",
+            UserId = userId,
+            TypeId = _context.LogTypes.FirstOrDefault(x => x.Name == "Participation").TypeId
+        };
+
+        @event.Associations.Add(association);
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
+
     [HttpPost("create")]
     public async Task<ActionResult<Event>> CreateEvent([FromForm] EventDto formData)
     {

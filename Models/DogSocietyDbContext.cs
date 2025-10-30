@@ -26,6 +26,13 @@ public class DogSocietyDbContext : DbContext
 			]
 		);
 
+		modelBuilder.Entity<LogType>().HasData(
+			[
+				new EventType { TypeId = 1, Name = "Statute" },
+				new EventType { TypeId = 2, Name = "Participation" }
+			]
+		);
+
 		base.OnModelCreating(modelBuilder);
 	}
 

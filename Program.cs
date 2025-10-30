@@ -59,11 +59,11 @@ if (app.Environment.IsDevelopment())
         options.RouteTemplate = "api/swagger/v1/swagger.json";
     }*/);
     
-    app.UseSwaggerUI(options =>
+    app.UseSwaggerUI(/*options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = "api";
-    });
+    }*/);
 }
 
 app.Run();
