@@ -116,6 +116,7 @@ public class AssociationController : ControllerBase
     /// </remarks>
     /// <returns>The active statute for the specified association.</returns>
     /// <response code="200">Returns the current statute.</response>
+    /// <response code="204">If the organization does not have a statute.</response>
     /// <response code="404">If no active statute was found.</response>
     /// <response code="401">If the user is not logged in.</response>
     [HttpGet("statutes/{associationId}")]
@@ -150,9 +151,8 @@ public class AssociationController : ControllerBase
     /// <returns>An HTTP 200 OK response if successful.</returns>
     /// <response code="200">Statute updated successfully.</response>
     /// <response code="400">If the provided data is invalid.</response>
-    /// <response code="403">If the user is not the president of the association.</response>
     /// <response code="404">If the association does not exist.</response>
-    /// <response code="401">If the user is not logged in.</response>
+    /// <response code="401">If the user is not the president of the association or is not logged in.</response>
     [HttpPost("changestatute")]
     public async Task<ActionResult> ChangeStatute([FromForm] StatuteDto formData)
     {
@@ -168,7 +168,7 @@ public class AssociationController : ControllerBase
 
         if (association.PresidentId != userId)
         {
-            return Forbid();
+            return Unauthorized();
         }
 
         var currentStatute = _context.Statutes.FirstOrDefault(

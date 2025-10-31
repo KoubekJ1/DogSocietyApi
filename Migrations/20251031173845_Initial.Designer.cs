@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DogSocietyApi.Migrations
 {
     [DbContext(typeof(DogSocietyDbContext))]
-    [Migration("20251031154457_Initial")]
+    [Migration("20251031173845_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
