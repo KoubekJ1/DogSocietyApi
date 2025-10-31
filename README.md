@@ -1,5 +1,6 @@
 # DogSocietyAPI
-Webové API napsané v C# pomocí ASP.NET určené pro evidenci spolků chovatelů psů.
+**ASP.NET bohužel neumožňuje Swagger UI poskytovat na endpointu /api, proto se nachází na endpointu /swagger**
+<p>Webové API napsané v C# pomocí ASP.NET určené pro evidenci spolků chovatelů psů.</p>
 
 ## Požadavky
 - .NET verze 9.0.306 nebo vyšší na hostovacím zařízení
@@ -20,3 +21,4 @@ Webové API napsané v C# pomocí ASP.NET určené pro evidenci spolků chovatel
 - Ujistěte se, že v souboru "appsettings.Development" v sekci "ConnectionStrings" v řádku "localhost" (řádek 10) je Váš připojovací textový řetězec k databázi
 - Aplikaci spusťe pomocí příkazu dotnet run
 - Aplikace se spustí na TCP portu 5295 s protokolem HTTP
+- **ASP.NET bohužel neumožňuje Swagger UI poskytovat na endpointu /api, proto se nachází na endpointu /swagger**
