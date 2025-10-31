@@ -1,4 +1,3 @@
-using DogSocietyApi.DataTransferObjects;
 using DogSocietyApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +19,10 @@ public class AddressController : ControllerBase
         _authorizationService = authorizationService;
     }
 
+    /// <summary>
+    /// Deletes a specific TodoItem.
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Address>>> GetAddresses()
     {
@@ -27,7 +30,7 @@ public class AddressController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Address>> GetAdress(long id)
+    public async Task<ActionResult<Address>> GetAddress(long id)
     {
         var address = await _context.Addresses.FindAsync(id);
 
@@ -37,8 +40,8 @@ public class AddressController : ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<ActionResult<Association>> CreateAddress([FromForm] Address address)
-    {   
+    public async Task<ActionResult<Address>> CreateAddress([FromForm] Address address)
+    {
         _context.Addresses.Add(address);
         await _context.SaveChangesAsync();
 

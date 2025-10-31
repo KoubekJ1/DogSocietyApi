@@ -20,10 +20,10 @@ namespace DogSocietyApi.Migrations
                 {
                     AddressId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    City = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    City = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     PostalCode = table.Column<string>(type: "text", nullable: false),
-                    StreetName = table.Column<string>(type: "text", nullable: false),
+                    StreetName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     StreetNumber = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -76,7 +76,7 @@ namespace DogSocietyApi.Migrations
                 {
                     EventId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     From = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Until = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     AddressId = table.Column<long>(type: "bigint", nullable: false),
@@ -128,9 +128,9 @@ namespace DogSocietyApi.Migrations
                 {
                     AssociationId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     CreationDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Notes = table.Column<string>(type: "text", nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     PresidentId = table.Column<long>(type: "bigint", nullable: false),
                     AddressId = table.Column<long>(type: "bigint", nullable: false)
                 },

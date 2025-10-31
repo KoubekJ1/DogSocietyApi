@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DogSocietyApi.Migrations
 {
     [DbContext(typeof(DogSocietyDbContext))]
-    [Migration("20251030181334_Initial")]
+    [Migration("20251031154457_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -50,10 +50,13 @@ namespace DogSocietyApi.Migrations
 
                     b.Property<string>("City")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
@@ -61,7 +64,8 @@ namespace DogSocietyApi.Migrations
 
                     b.Property<string>("StreetName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("StreetNumber")
                         .IsRequired()
@@ -88,10 +92,12 @@ namespace DogSocietyApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("PresidentId")
                         .HasColumnType("bigint");
@@ -158,7 +164,8 @@ namespace DogSocietyApi.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<long>("TypeId")
                         .HasColumnType("bigint");

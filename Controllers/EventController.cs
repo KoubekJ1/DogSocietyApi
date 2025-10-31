@@ -42,20 +42,20 @@ public class EventController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("participation")]
+    [HttpGet("participation/{associationId}")]
     public async Task<ActionResult<IEnumerable<Event>>> GetJoinedEvents(long associationId)
     {
-        var events = _context.Events.Include(x => x.Associations);
+        var events = _context.Events;
         var result = events.Where(x => x.Associations.Any(y => y.AssociationId == associationId));
         return Ok(result);
     }
 
-    [HttpGet("upcomingparticipation")]
+    [HttpGet("upcomingparticipation/{associationId}")]
     public async Task<ActionResult<IEnumerable<Association>>> GetUpcomingJoinedEvents(long associationId)
     {
-        var events = _context.Events.Include(x => x.Associations);
+        var events = _context.Events;
         var result = events.Where(x => x.Associations.Any(y => y.AssociationId == associationId))
-            .Where(z => z.From > DateTime.Now);
+            .Where(z => z.From > DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc));
         return Ok(result);
     }
 
@@ -80,6 +80,11 @@ public class EventController : ControllerBase
             return Unauthorized();
         }
 
+        if (@event.From < DateTime.Now)
+        {
+            return BadRequest("Event is no longer available!");
+        }
+
         if (@event.Associations.FirstOrDefault(x => x.AssociationId == formData.associationId) != null)
         {
             return Ok("Association already participating!");
@@ -95,6 +100,9 @@ public class EventController : ControllerBase
             TypeId = _context.LogTypes.FirstOrDefault(x => x.Name == "Participation").TypeId
         };
 
+        _context.AuditLog.Add(log);
+        await _context.SaveChangesAsync();
+
         @event.Associations.Add(association);
         await _context.SaveChangesAsync();
 
@@ -104,6 +112,23 @@ public class EventController : ControllerBase
     [HttpPost("create")]
     public async Task<ActionResult<Event>> CreateEvent([FromForm] EventDto formData)
     {
+        if (formData.From < DateTime.Now)
+        {
+            return BadRequest("Invalid event start time!");
+        }
+        if (formData.Until < formData.From)
+        {
+            return BadRequest("Invalid event length!");
+        }
+        if (await _context.EventTypes.FindAsync(formData.TypeId) == null)
+        {
+            return BadRequest("Invalid event type!");
+        }
+        if (await _context.Addresses.FindAsync(formData.AddressId) == null)
+        {
+            return BadRequest("Invalid address ID!");
+        }
+
         var @event = new Event
         {
             Name = formData.Name,
