@@ -19,6 +19,17 @@ public class UserController : ControllerBase
         _context = context;
     }
 
+    /// <summary>
+    /// Registers a new user account.
+    /// </summary>
+    /// <param name="registration">The RegisterDto containing user registration details.</param>
+    /// <remarks>
+    /// This endpoint creates a new user account with default type "User".  
+    /// The returned user object contains all registered information.
+    /// </remarks>
+    /// <returns>The newly created user object.</returns>
+    /// <response code="200">User registered successfully.</response>
+    /// <response code="400">If the registration data is invalid.</response>
     [HttpPost("register")]
     public async Task<ActionResult<User>> Register([FromForm] RegisterDto registration)
     {
@@ -39,6 +50,17 @@ public class UserController : ControllerBase
         return Ok(user);
     }
 
+    /// <summary>
+    /// Authenticates a user and creates a login session using cookie-based authentication.
+    /// </summary>
+    /// <param name="login">The LoginDto containing user credentials.</param>
+    /// <remarks>
+    /// On successful authentication, this endpoint issues a cookie-based session valid for 30 minutes.  
+    /// The cookie contains the user's ID, email, full name, and role for authorization purposes.
+    /// </remarks>
+    /// <returns>The authenticated user object if login succeeds.</returns>
+    /// <response code="200">User logged in successfully.</response>
+    /// <response code="401">Invalid credentials.</response>
     [HttpPost("login")]
     public async Task<ActionResult<User>> Login([FromForm] LoginDto login)
     {

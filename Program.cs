@@ -17,11 +17,18 @@ builder.Services.AddSwaggerGen(options =>
     {
         Version = "v1",
         Title = "DogSociety API",
-        Description = "An ASP.NET Core Web API for managing DogSociety",
+        Description = "An ASP.NET Core Web API for managing DogSociety."
+        + "\nAll endpoints except the ones from the User controller require the client to provide an authentication cookie!"
+        + "\nIn the Swagger UI, running the /User/login endpoint with correct credentials is enough to provide authentication."
     });
 
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    options.AddServer(new OpenApiServer
+    {
+        Url = "http://localhost:5295"
+    });
 });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
